@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "dc1" do |node|
-    node.vm.box = "gusztavvargadr/windows-server"
+    node.vm.box = "gusztavvargadr/windows-server-standard-core"
     node.vm.hostname = "dc1"
     node.vm.guest = :windows
     node.vm.communicator = :winrm
@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "dc2" do |node|
-    node.vm.box = "gusztavvargadr/windows-server"
+    node.vm.box = "gusztavvargadr/windows-server-standard-core"
     node.vm.hostname = "dc2"
     node.vm.guest = :windows
     node.vm.communicator = :winrm
