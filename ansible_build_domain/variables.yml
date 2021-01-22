@@ -2,7 +2,7 @@
 fullyqualified: vagrant.local
 netbios: vagrant
 ward: ward_administrator
-safepass: vagrant
+safepass: Vagrant$$2021
 domainadminuser: "vagrant\\administrator"
 domainadminpassword: "vagrant"
 
