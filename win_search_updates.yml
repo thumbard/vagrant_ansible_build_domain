@@ -1,0 +1,13 @@
+- name: Search-only, return list of found updates (if any), log to C:\ansible_wu.txt
+  gather_facts: false
+  hosts: win
+  connection: winrm
+  tasks:
+  - name: Search for Windows Updates
+    win_updates:
+      category_names:
+        - SecurityUpdates
+        - CriticalUpdates
+        - UpdateRollups
+      state: searched
+      log_path: C:\ansible_wu.txt

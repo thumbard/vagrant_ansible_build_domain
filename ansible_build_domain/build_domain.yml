@@ -1,0 +1,98 @@
+---
+- hosts: primary
+  gather_facts: no
+  vars_files:
+    - variables.yml
+
+  tasks:
+  - name: Build Domain
+    win_domain:
+      dns_domain_name: "{{ fullyqualified }}"
+      domain_netbios_name: "{{ netbios }}"
+      safe_mode_password: "{{ safepass }}"
+    register: domain_install
+
+  - name: Restart DC
+    win_reboot:
+      post_reboot_delay: 120
+
+  - name: Add ward_administrator
+    win_domain_user:
+      name: "{{ ward }}"
+      firstname: ward
+      surname: administrator
+      password: "{{ safepass }}"
+      state: present
+      groups:
+        - Domain Admins
+
+  - name: Update DNS
+    win_dns_client:
+      adapter_names: 'Ethernet 2'
+      ipv4_addresses:
+      - "{{ secondaryIP }}"
+      - "{{ primaryIP }}"
+  
+
+- hosts: secondary
+  gather_facts: no
+  vars_files:
+    - variables.yml
+
+  tasks:
+  - name: Update DNS
+    win_dns_client:
+      adapter_names: 'Ethernet 2'
+      ipv4_addresses:
+      - "{{ primaryIP }}"
+      - "{{ secondaryIP }}"
+
+  - name: Add secondary DC
+    win_domain_controller:
+      dns_domain_name: "{{ fullyqualified }}"
+      domain_admin_user: "{{ domainadminuser }}"
+      domain_admin_password: "{{ domainadminpassword }}"
+      safe_mode_password: "{{ safepass }}"
+      state: domain_controller
+      log_path: C:\ansible_win_domain_controller.txt
+
+  - name: Reboot Secondary DC
+    win_reboot:
+
+- hosts: member
+  gather_facts: no
+  vars_files:
+    - variables.yml
+
+  tasks:
+  - name: Update DNS
+    win_dns_client:
+      adapter_names: 'Ethernet 2'
+      ipv4_addresses:
+      - "{{ primaryIP }}"
+      - "{{ secondaryIP }}"
+
+  - name: Join management VM to domain
+    win_domain_membership:
+      dns_domain_name: "{{ fullyqualified }}"
+      hostname: "{{ mgthostname }}"
+      domain_admin_user: "{{ domainadminuser }}"
+      domain_admin_password: "{{ domainadminpassword }}"
+      state: domain
+    register: domain_state
+
+  - name: Reboot management VM
+    win_reboot:
+      post_reboot_delay: 120
+
+  - name: Install RSAT
+    win_feature:
+      name: RSAT
+      state: present
+      include_sub_features: yes
+      include_management_tools: yes
+
+  - name: Reboot management VM
+    win_reboot:
+      post_reboot_delay: 120
+...

@@ -1,0 +1,14 @@
+- name: Install Windows Updates
+  gather_facts: false
+  hosts: win
+  connection: winrm
+  tasks:
+  - name: Install Windows Updates
+    win_updates:
+      category_names:
+        - SecurityUpdates
+        - CriticalUpdates
+        - UpdateRollups
+      state: installed
+      reboot: yes
+      log_path: C:\ansible_wu.txt

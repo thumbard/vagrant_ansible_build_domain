@@ -1,0 +1,18 @@
+---
+fullyqualified: vagrant.local
+netbios: vagrant
+ward: ward_administrator
+safepass: vagrant
+domainadminuser: "vagrant\\administrator"
+domainadminpassword: "vagrant"
+
+primaryIP: 10.3.10.11
+secondaryIP: 10.3.10.12
+
+mgthostname: vagrantmgt01
+
+ansible_user: vagrant
+ansible_password: vagrant
+ansible_connection: winrm
+ansible_winrm_server_cert_validation: ignore
+...
